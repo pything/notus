@@ -4,6 +4,8 @@
 __author__ = "Christian Heider Nielsen"
 __doc__ = r"""
 
+            WIP: IS A BUGGY IMPLEMENTATION, IT GENERATES GARBAGE ICONS IN THE NOTIFICATION BAR!
+
            Created on 25-10-2020
            """
 
@@ -20,6 +22,7 @@ from typing import Optional
 from pkg_resources import Requirement, resource_filename
 
 from notus import PROJECT_NAME
+from notus.win10.extra_magic_windows_flags import PARAM_CLICKED, PARAM_DESTROY
 
 try:
     from PIL import Image
@@ -86,17 +89,6 @@ from win32gui import (
 )
 from pywintypes import error as WinTypesException
 
-SPIF_SENDCHANGE = 0x2
-SPI_SETMESSAGEDURATION = 0x2017
-SPI_GETMESSAGEDURATION = 0x2016
-PARAM_DESTROY = 0x404
-PARAM_CLICKED = 0x405
-MOUSE_UP = 0x202
-
-
-# PARAM_DESTROY = 1028
-# PARAM_CLICKED = 1029
-
 
 # Class
 
@@ -140,6 +132,7 @@ class Win10Toaster(object):
         sound_path=None,
         callback_on_click: callable = None,
         tooltip: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """Notification settings.
 
@@ -153,7 +146,7 @@ class Win10Toaster(object):
         self.duration = duration
 
         def callback():
-            """ """
+            """description"""
             self.duration = 0
 
             if callback_on_click is not None:
@@ -227,23 +220,23 @@ class Win10Toaster(object):
 buff = create_unicode_buffer(10)
 windll.user32.SystemParametersInfoW(SPI_GETMESSAGEDURATION, 0, buff, 0)
 try:
-  oldlength = int(buff.value.encode("unicode_escape").decode().replace("\\", "0"), 16)
+oldlength = int(buff.value.encode("unicode_escape").decode().replace("\\", "0"), 16)
 except ValueError:
-  oldlength = 5  # Default notification length
+oldlength = 5  # Default notification length
 
 duration_output = windll.user32.SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, self.duration, SPIF_SENDCHANGE)
 windll.user32.SystemParametersInfoW(SPI_GETMESSAGEDURATION, 0, buff, 0)
 
 duration_error = False
 try:
-  int(buff.value.encode("unicode_escape").decode().replace("\\", "0"), 16)
+int(buff.value.encode("unicode_escape").decode().replace("\\", "0"), 16)
 except ValueError:
-  duration_error = True
+duration_error = True
 
 if duration_output == 0 or self.duration > 255 or duration_error:
-  windll.user32.SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
-  self.active = False
-  raise RuntimeError(f"Some trouble with the duration ({self.duration})"          ": Invalid duration length")
+windll.user32.SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
+self.active = False
+raise RuntimeError(f"Some trouble with the duration ({self.duration})"          ": Invalid duration length")
 """
 
         title += " " * randint(0, 63 - len(title))
@@ -298,14 +291,18 @@ SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
                 sleep(0.1)
                 self.duration -= 0.1
 
-            DestroyWindow(self.window_handle)
-            UnregisterClass(self.window_class.lpszClassName, self.instance_handle)
-
-            try:  # Sometimes the try icon sticks around until you click it - this should stop that
-                Shell_NotifyIcon(NIM_DELETE, (self.window_handle, 0))
-            except WinTypesException:
-                pass
+            self.destroy_instance()
         self.active = False
+
+    def destroy_instance(self):
+        """description"""
+        DestroyWindow(self.window_handle)
+        UnregisterClass(self.window_class.lpszClassName, self.instance_handle)
+
+        try:  # Sometimes the try icon sticks around until you click it - this should stop that
+            Shell_NotifyIcon(NIM_DELETE, (self.window_handle, 0))
+        except WinTypesException:
+            pass
 
     def show(
         self,
@@ -318,18 +315,18 @@ SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
         callback_on_click: Optional[callable] = None,
         wait_for_active_notification: bool = True,
         tooltip: Optional[str] = None,
+        **kwargs,
     ) -> bool:
         """Notification settings.
 
         :param tooltip:
         :param wait_for_active_notification:
-        :param duration:
         :param threaded:
         :param callback_on_click:
         :param title:     notification title
         :param message:       notification message
         :param icon_path: path to the .ico file to custom notification
-        :para mduration:  delay in seconds before notification self-destruction, None for no-self-destruction
+        :param duration:  delay in seconds before notification self-destruction, None for no-self-destruction
         """
         args = title, message, icon_path, duration, None, callback_on_click, tooltip
 
@@ -338,7 +335,7 @@ SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
         else:
             if (
                 self.notification_active and wait_for_active_notification
-            ):  # We have an active notification, let is finish so we don't spam them
+            ):  # We have an active notification, let it finish we are not spamming
                 # TODO: FIGURE OUT if sleeping here is a better solution
                 return False
 
@@ -349,10 +346,14 @@ SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
     @property
     def notification_active(self) -> bool:
         """See if we have an active notification showing"""
-        if (
-            self._thread is not None and self._thread.is_alive()
-        ):  # We have an active notification, let is finish we don't spam them
-            return True
+        if self._thread is not None:
+            if self._thread.is_alive():
+                return True
+            else:
+                self.destroy_instance()
+                self._thread.join()
+                del self._thread
+                self._thread = None
         return False
 
     def wnd_proc(self, hwnd, msg, wparam, lparam, **kwargs) -> None:
@@ -366,18 +367,18 @@ SystemParametersInfoW(SPI_SETMESSAGEDURATION, 0, oldlength, SPIF_SENDCHANGE)
 
     def on_destroy(self, hwnd, msg, wparam, lparam) -> None:
         """Clean after notification ended."""
-        Shell_NotifyIcon(NIM_DELETE, (self.window_handle, 0))
+        self.destroy_instance()
         PostQuitMessage(0)
 
 
 if __name__ == "__main__":
 
     def main():
-        """ """
+        """description"""
         import time
 
         def p_callback():
-            """ """
+            """description"""
             print("clicked toast")
 
         toaster = Win10Toaster()

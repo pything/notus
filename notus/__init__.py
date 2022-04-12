@@ -25,7 +25,7 @@ from .notification import *
 
 def dist_is_editable(dist: Any) -> bool:
     """
-    Return True if given Distribution is an editable install.
+    Return True if given Distribution is an editable installation.
     """
     import sys
 
@@ -39,6 +39,7 @@ def dist_is_editable(dist: Any) -> bool:
 PROJECT_NAME = __project__.lower().strip().replace(" ", "_")
 PROJECT_VERSION = __version__
 PROJECT_AUTHOR = __author__.lower().strip().replace(" ", "_")
+PROJECT_YEAR = 2018
 PROJECT_APP_PATH = AppPath(app_name=PROJECT_NAME, app_author=PROJECT_AUTHOR)
 
 distributions = {v.key: v for v in pkg_resources.working_set}

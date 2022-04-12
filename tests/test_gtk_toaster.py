@@ -19,7 +19,7 @@ if is_linux():
         """Test module level functions."""
 
         def setUp(self):
-            """"""
+            """description"""
             gtk_toaster.init("toaster test suite")
 
         def test_init_uninit(self):
@@ -41,7 +41,7 @@ if is_linux():
         """Test notifications."""
 
         def setUp(self):
-            """"""
+            """description"""
             gtk_toaster.init("toaster test suite")
 
         def test_basic(self):
@@ -119,7 +119,6 @@ if is_linux():
             n.close()
 
         def test_icon_from_pixbuf(self):
-
             import gi
 
             gi.require_version("Gtk", "3.0")

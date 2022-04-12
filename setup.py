@@ -93,14 +93,22 @@ with open(Path(__file__).parent / "notus" / "__init__.py", "r") as project_init_
 __author__ = author
 
 
-class AppPathPackage:
+class NotusPackage:
     @property
     def test_dependencies(self) -> list:
+        """
+
+        returns the list of test dependencies
+
+        :return:
+        :rtype:
+        """
         return read_reqs("requirements_tests.txt", Path(__file__).parent / "requirements")
 
     @property
     def setup_dependencies(self) -> list:
         """
+        returns the setup requirements
 
         :return:
         """
@@ -109,6 +117,7 @@ class AppPathPackage:
     @property
     def package_name(self) -> str:
         """
+        returns the name of the package
 
         :return:
         """
@@ -117,14 +126,16 @@ class AppPathPackage:
     @property
     def url(self) -> str:
         """
+        returns the url of the project
 
         :return:
         """
-        return "https://github.com/cnheider/notus"
+        return "https://github.com/pything/notus"
 
     @property
     def download_url(self) -> str:
         """
+        returns the download url for the package
 
         :return:
         """
@@ -133,6 +144,7 @@ class AppPathPackage:
     @property
     def readme_type(self) -> str:
         """
+        returns the type of readme to use
 
         :return:
         """
@@ -141,6 +153,7 @@ class AppPathPackage:
     @property
     def packages(self) -> List[Union[bytes, str]]:
         """
+        returns a list of packages to include in the distribution
 
         :return:
         """
@@ -154,6 +167,8 @@ class AppPathPackage:
     def author_name(self) -> str:
         """
 
+        returns the author's name
+
         :return:
         """
         return author
@@ -161,6 +176,7 @@ class AppPathPackage:
     @property
     def author_email(self) -> str:
         """
+        returns the author's email
 
         :return:
         """
@@ -169,6 +185,7 @@ class AppPathPackage:
     @property
     def maintainer_name(self) -> str:
         """
+        returns the maintainer's name
 
         :return:
         """
@@ -177,6 +194,7 @@ class AppPathPackage:
     @property
     def maintainer_email(self) -> str:
         """
+        returns the maintainer's email
 
         :return:
         """
@@ -185,6 +203,7 @@ class AppPathPackage:
     @property
     def package_data(self) -> dict:
         """
+        returns the package data to include in the distribution
 
         :return:
         """
@@ -194,6 +213,7 @@ class AppPathPackage:
     @property
     def entry_points(self) -> dict:
         """
+        returns the entry points to include in the distribution
 
         :return:
         """
@@ -207,6 +227,7 @@ class AppPathPackage:
     @property
     def extras(self) -> dict:
         """
+        returns the extras to include in the distribution
 
         :return:
         """
@@ -230,7 +251,7 @@ class AppPathPackage:
 
     @property
     def requirements(self) -> list:
-        """
+        """description
 
         :return:
         """
@@ -238,7 +259,7 @@ class AppPathPackage:
 
     @property
     def description(self) -> str:
-        """
+        """description
 
         :return:
         """
@@ -246,7 +267,7 @@ class AppPathPackage:
 
     @property
     def readme(self) -> str:
-        """
+        """description
 
         :return:
         """
@@ -255,7 +276,7 @@ class AppPathPackage:
 
     @property
     def keyword(self) -> str:
-        """
+        """description
 
         :return:
         """
@@ -264,7 +285,7 @@ class AppPathPackage:
 
     @property
     def license(self) -> str:
-        """
+        """description
 
         :return:
         """
@@ -272,7 +293,7 @@ class AppPathPackage:
 
     @property
     def classifiers(self) -> List[str]:
-        """
+        """description
 
         :return:
         """
@@ -294,7 +315,7 @@ class AppPathPackage:
 
     @property
     def version(self) -> str:
-        """
+        """description
 
         :return:
         """
@@ -302,7 +323,7 @@ class AppPathPackage:
 
 
 if __name__ == "__main__":
-    pkg = AppPathPackage()
+    pkg = NotusPackage()
 
     setup(
         name=pkg.package_name,

@@ -6,3 +6,14 @@ __doc__ = r"""
 
            Created on 30-12-2020
            """
+
+
+class Class:
+    """
+    Qt Backend
+
+    #TODO: NOT DONE!
+
+    """
+
+    pass

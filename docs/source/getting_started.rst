@@ -1,5 +1,9 @@
 .. _getting_started:
 
+
+pip install notus -U
+
+
 Getting Started
 ================
 

@@ -13,7 +13,6 @@ from typing import Optional, Union
 
 from warg import sink, is_linux
 
-
 try:
     if is_linux():
         import gi
@@ -23,14 +22,13 @@ try:
 
         import dbus
     else:
-        raise ImportError("Notus is not running on Linux")
+        raise ImportError("Notus is not running on Linux, so it cannot use the GTK D-Bus interface.")
 except ModuleNotFoundError as e:
     import sys
     from warnings import warn
 
     warn(f"gi not found, maybe use another implementation fitting for your system: {sys.platform}")
     raise e
-
 
 EXPIRES_DEFAULT = -1
 EXPIRES_NEVER = 0
@@ -203,7 +201,7 @@ class GtkToast(object):
     You can also set an icon from data in your application - see
     :meth:`set_icon_from_pixbuf`."""
 
-    _id = 0
+    notification_id = 0
     _timeout = -1  # -1 = server default settings
     _closed_callback = sink
 
@@ -213,34 +211,33 @@ class GtkToast(object):
         body: Optional[str] = "No msg",
         *,
         icon: Optional[Union[str, GdkPixbuf.Pixbuf]] = "",
+        **kwargs,
     ):
         self.title = title
         self.body = body
         self._hints = {}
 
         if isinstance(icon, GdkPixbuf.Pixbuf):
-            self._icon = ""
+            self.icon = ""
             self.set_hint("icon_data", icon)
         else:
-            self._icon = icon
+            self.icon = icon
 
         self._actions = {}
         self._data = {}  # Any data the user wants to attach
 
-    def show(self, *args):
+    def show(self, msg: Optional[str] = None, title: Optional[str] = None, **kwargs):
         """Ask the server to show the notification.
-
-
 
         Call this after you have finished setting any parameters of the
         notification that you want."""
 
-        self.update(*args)
+        self.update(body=msg, title=title, **kwargs)
 
         nid = dbus_interface.Notify(
             APP_NAME,  # app_name       (spec names)
-            self._id,  # replaces_id
-            self._icon,  # app_icon
+            self.notification_id,  # replaces_id
+            self.icon,  # app_icon
             self.title,  # summary
             self.body,  # body
             self._make_actions_array(),  # actions
@@ -248,31 +245,33 @@ class GtkToast(object):
             self._timeout,  # expire_timeout
         )
 
-        self._id = int(nid)
+        self.notification_id = int(nid)
 
         if HAVE_MAINLOOP:
-            NOTIFICATIONS_REGISTRY[self._id] = self
+            NOTIFICATIONS_REGISTRY[self.notification_id] = self
         return True
 
     def update(
         self,
-        title: str,
-        body: Optional[str] = "",
+        title: str = None,
+        body: Optional[str] = None,
         *,
-        icon: Optional[Union[str, GdkPixbuf.Pixbuf]] = "",
+        icon: Optional[Union[str, GdkPixbuf.Pixbuf]] = None,
     ):
         """Replace the summary and body of the notification, and optionally its
         icon. You should call :meth:`show` again after this to display the
         updated notification."""
-        self.title = title
-        self.body = body
+        if title is not None:
+            self.title = title
+        if body is not None:
+            self.body = body
         if icon is not None:
-            self._icon = icon
+            self.icon = icon
 
     def close(self):
         """Ask the server to close this notification."""
-        if self._id != 0:
-            dbus_interface.CloseNotification(self._id)
+        if self.notification_id != 0:
+            dbus_interface.CloseNotification(self.notification_id)
 
     def set_hint(self, key, value):
         """n.set_hint(key, value) <--> n.hints[key] = value
@@ -408,6 +407,7 @@ class GtkToast(object):
 if __name__ == "__main__":
 
     def main():
+        """description"""
         import gi
 
         gi.require_version("Gtk", "3.0")

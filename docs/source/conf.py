@@ -21,7 +21,10 @@
 import sys
 from pathlib import Path
 
+from warg import cprint
+
 PACKAGE_ROOT = Path(__file__).parent.parent.parent
+cprint(PACKAGE_ROOT)
 sys.path.insert(0, str(PACKAGE_ROOT.absolute()))
 
 from notus import PROJECT_AUTHOR, PROJECT_NAME, PROJECT_YEAR, PROJECT_VERSION
@@ -37,8 +40,6 @@ from notus import PROJECT_AUTHOR, PROJECT_NAME, PROJECT_YEAR, PROJECT_VERSION
 # ones.
 
 extensions = [
-    "m2r2",
-    # 'recommonmark',
     "sphinxcontrib.programoutput",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -54,9 +55,13 @@ extensions = [
 ]
 
 napoleon_use_ivar = True
+autosummary_generate = True
+# autosummary_imported_members = False
+autosummary_ignore_module_all = False
+autosummary_generate_overwrite = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ["../templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -88,7 +93,7 @@ release = version  # 'master'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set 'language' from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -118,9 +123,15 @@ html_theme = "alabaster"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named 'default.css' will overwrite the builtin 'default.css'.
-html_static_path = ["_static"]
+html_static_path = ["../../.github/images"]
+html_logo = "../../.github/images/toaster.svg"
+html_theme_options = {
+    # "logo_only": True,
+    # "display_version": False,
+}
 
-html_baseurl = f"{PROJECT_NAME}.github.io"
+ORGANISATION = "pything"
+html_baseurl = f"{ORGANISATION}.github.io/{PROJECT_NAME}"
 
 # -- Options for HTMLHelp output ------------------------------------------
 
