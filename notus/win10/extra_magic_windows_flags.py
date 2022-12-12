@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "Christian Heider Nielsen"
+__doc__ = r"""
+
+
+           Created on 25-10-2020
+           """
+
 SPIF_SENDCHANGE = 0x2
 SPI_SETMESSAGEDURATION = 0x2017
 SPI_GETMESSAGEDURATION = 0x2016

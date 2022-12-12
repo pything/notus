@@ -1,7 +1,21 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "Christian Heider Nielsen"
+__doc__ = r"""
+BAR!
+
+           Created on 25-10-2020
+           """
+
 from enum import Enum
 
 
 class WindowsEnum(Enum):
+    """
+    Enum for Windows GUI flags.
+    """
+
     CLR_NONE = -1
 
     dllhandle = 1782513664

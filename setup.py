@@ -3,7 +3,7 @@
 import glob
 import re
 from pathlib import Path
-from typing import IO, List, Sequence, Union
+from typing import List, Sequence, Union, TextIO
 
 from setuptools import find_packages, setup
 
@@ -33,7 +33,7 @@ def read_reqs(file: str, path: Path) -> List[str]:
     :return:
     """
 
-    def readlines_ignore_comments(f: IO):
+    def readlines_ignore_comments(f: TextIO):
         """
 
         :param f:

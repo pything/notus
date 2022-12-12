@@ -6,6 +6,7 @@ __doc__ = r"""Toast a message"""
 
 __all__ = ["main"]
 
+
 from notus import notify
 
 
@@ -26,4 +27,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()

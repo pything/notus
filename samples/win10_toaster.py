@@ -7,7 +7,7 @@ __doc__ = r"""
            Created on 04-12-2020
            """
 
-from notus.win10 import Win10Toaster
+from notus.win10.win10_toaster import Win10Toaster
 
 
 def main() -> None:

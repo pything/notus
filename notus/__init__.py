@@ -14,7 +14,17 @@ Created on 27/04/2019
 
 @author: cnheider
 """
-__all__ = ["PROJECT_APP_PATH", "PROJECT_NAME", "PROJECT_VERSION", "get_version"]
+__all__ = [
+    "PROJECT_APP_PATH",
+    "PROJECT_NAME",
+    "PROJECT_VERSION",
+    "get_version",
+    "PROJECT_ORGANISATION",
+    "PROJECT_AUTHOR",
+    "PROJECT_YEAR",
+    #'INCLUDE_PROJECT_READMES',
+    #'PACKAGE_DATA_PATH'
+]
 
 from apppath import AppPath
 
@@ -41,6 +51,7 @@ PROJECT_VERSION = __version__
 PROJECT_AUTHOR = __author__.lower().strip().replace(" ", "_")
 PROJECT_YEAR = 2018
 PROJECT_APP_PATH = AppPath(app_name=PROJECT_NAME, app_author=PROJECT_AUTHOR)
+PROJECT_ORGANISATION = "pything"
 
 distributions = {v.key: v for v in pkg_resources.working_set}
 if PROJECT_NAME in distributions:

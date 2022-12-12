@@ -17,7 +17,7 @@ class Class:
     """
 
     def __init__(self):
-        from notus.win10_toaster import Win10Toaster
+        from notus.win10.win10_toaster import Win10Toaster
 
         self.toaster = Win10Toaster()
 

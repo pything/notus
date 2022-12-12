@@ -9,7 +9,7 @@ __doc__ = r"""Based on the notifications spec at: http://developer.gnome.org/not
 __all__ = ["GtkToast"]
 
 import time
-from typing import Optional, Union
+from typing import Optional, Union, MutableMapping
 
 from warg import sink, is_linux
 
@@ -18,6 +18,7 @@ try:
         import gi
 
         gi.require_version("Gtk", "3.0")
+        gi.require_version("GdkPixbuf", "2.0")
         from gi.repository import GdkPixbuf
 
         import dbus
@@ -48,6 +49,8 @@ NOTIFICATIONS_REGISTRY = {}
 def action_callback(nid, action, notifications_registry) -> None:
     """
 
+    callback for when a notification action is invoked.
+
     :param nid:
     :type nid:
     :param action:
@@ -67,6 +70,7 @@ def action_callback(nid, action, notifications_registry) -> None:
 
 def closed_callback(nid, reason, notifications_registry) -> None:
     """
+    callback for when a notification is closed.
 
     :param nid:
     :type nid:
@@ -88,6 +92,8 @@ def closed_callback(nid, reason, notifications_registry) -> None:
 
 # TODO: Object orient globals!
 class UnconstructedDbusObject(object):
+    """A dummy object to represent the D-Bus interface."""
+
     class NotSetupError(RuntimeError):
         """Error raised if you try to communicate with the server before calling
         :func:`init`."""
@@ -110,7 +116,7 @@ def init(app_name, mainloop=None):
 
     - Set a default mainloop (dbus.set_default_main_loop) before calling init()
     - Pass the mainloop parameter as a string 'glib' or 'qt' to integrate with
-    those mainloops. (N.B. passing 'qt' currently makes that the default dbus
+    those main loops. (N.B. passing 'qt' currently makes that the default dbus
     mainloop, because that's the only way it seems to work.)
     - Pass the mainloop parameter a DBus compatible mainloop instance, such as
     dbus.mainloop.glib.DBusGMainLoop().
@@ -226,7 +232,7 @@ class GtkToast(object):
         self._actions = {}
         self._data = {}  # Any data the user wants to attach
 
-    def show(self, msg: Optional[str] = None, title: Optional[str] = None, **kwargs):
+    def show(self, msg: Optional[str] = None, title: Optional[str] = None, **kwargs: MutableMapping):
         """Ask the server to show the notification.
 
         Call this after you have finished setting any parameters of the

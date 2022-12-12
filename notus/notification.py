@@ -9,6 +9,8 @@ __doc__ = r"""
 
 __all__ = ["notify", "JobNotificationSession"]
 
+from typing import Sequence, MutableMapping
+
 from warg import AlsoDecorator
 
 
@@ -80,7 +82,7 @@ class JobNotificationSession(AlsoDecorator):
         notify(f"{self.job_id} Ended", instance=self.instance, threaded=self.threaded)
         del self.instance
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Sequence, **kwargs: MutableMapping):
         notify(
             f'{self.job_id} {"".join(args)} {"".join(kwargs.items())}',
             instance=self.instance,

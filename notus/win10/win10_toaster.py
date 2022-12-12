@@ -17,7 +17,7 @@ from pathlib import Path
 from random import randint
 from threading import Thread
 from time import sleep
-from typing import Optional
+from typing import Optional, Sequence, MutableMapping
 
 from pkg_resources import Requirement, resource_filename
 
@@ -112,7 +112,7 @@ class Win10Toaster(object):
         :return:         callable
         """
 
-        def inner(*args, **kwargs):
+        def inner(*args: Sequence, **kwargs: MutableMapping):
             """
 
             :param args:
